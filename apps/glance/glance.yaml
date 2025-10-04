@@ -16,26 +16,35 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: glance
-  labels: { app: glance }
+  labels:
+    app: glance
 spec:
   replicas: 1
-  selector: { matchLabels: { app: glance } }
+  selector:
+    matchLabels:
+      app: glance
   template:
-    metadata: { labels: { app: glance } }
+    metadata:
+      labels:
+        app: glance
     spec:
-      nodeSelector: { role: apps }     # targets nixcraftx23 (we labeled earlier)
+      nodeSelector:
+        role: apps
       containers:
         - name: glance
           image: glanceapp/glance:latest
-          args: ["--config". "/app/config/glance.yaml"]
-          ports: [{ containerPort: 8080 }]
+          args: ["--config", "/app/config/glance.yml"]
+          ports:
+            - containerPort: 8080
           volumeMounts:
             - name: cfg
-              mountPath: /app/glance.yml
+              mountPath: /app/config/glance.yml   # <- correct path
               subPath: glance.yml
+              readOnly: true
       volumes:
         - name: cfg
-          configMap: { name: glance-config }
+          configMap:
+            name: glance-config
 ---
 apiVersion: v1
 kind: Service
@@ -43,7 +52,8 @@ metadata:
   name: glance
 spec:
   type: NodePort
-  selector: { app: glance }
+  selector:
+    app: glance
   ports:
     - port: 8080
       targetPort: 8080
