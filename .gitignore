@@ -1,0 +1,7 @@
+.DS_Store
+*.key
+*.pem
+*.crt
+.kube/
+.age-key.txt
+.env*
