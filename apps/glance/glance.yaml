@@ -27,6 +27,7 @@ spec:
       containers:
         - name: glance
           image: glanceapp/glance:latest
+          args: ["--config". "/app/config/glance.yaml"]
           ports: [{ containerPort: 8080 }]
           volumeMounts:
             - name: cfg
