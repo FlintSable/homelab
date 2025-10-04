@@ -1,0 +1,2 @@
+# Put cluster-wide components here later (ingress, metallb, gpu, flux, etc.)
+resources: []

@@ -1,0 +1,4 @@
+resources:
+  - glance.yaml
+commonLabels:
+  app.kubernetes.io/managed-by: gitops
