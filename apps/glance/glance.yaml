@@ -5,49 +5,55 @@ metadata:
 data:
   glance.yml: |
     pages:
-      - name: Home
+      - name: Startpage
         columns:
+          # Left sidebar
+          - size: small
+            widgets:
+              - type: monitor
+                cache: 1m
+                title: NETWORK
+                sites:
+                  - title: UniFi
+                    url: https://192.168.1.1
+                    icon: si:ubiquiti
+                  
+                  - title: Xfinity Router
+                    url: http://10.0.0.1
+                    icon: si:xfinity
+
+          # Main content area
           - size: full
             widgets:
-              - type: header
-                title: Homelab
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: glance
-  labels: { app: glance }
-spec:
-  replicas: 1
-  selector: { matchLabels: { app: glance } }
-  template:
-    metadata: { labels: { app: glance } }
-    spec:
-      nodeSelector: { role: apps }
-      containers:
-        - name: glance
-          image: glanceapp/glance:latest
-          ports: [{ containerPort: 8080 }]
-          volumeMounts:
-            - name: cfg
-              mountPath: /app/config        # mount the whole dir
-              readOnly: true
-      volumes:
-        - name: cfg
-          configMap:
-            name: glance-config
-            items:
-              - key: glance.yml
-                path: glance.yml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: glance
-spec:
-  type: NodePort
-  selector: { app: glance }
-  ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 31080
+              - type: monitor
+                cache: 1m
+                title: INFRASTRUCTURE
+                sites:
+                  - title: TrueNAS
+                    url: http://192.168.1.86
+                    icon: si:truenas
+                  
+                  - title: K8s Control Plane
+                    url: https://192.168.110:6443
+                    icon: si:kubernetes
+                  
+                  - title: K8s Worker Node
+                    url: http://192.168.1.182
+                    icon: si:kubernetes
+
+          # Right sidebar (optional - for future widgets)
+          - size: small
+            widgets:
+              - type: calendar
+
+      # Keep your existing Home tab
+      - name: Home
+        columns:
+          - size: small
+            widgets:
+              - type: calendar
+              - type: weather
+                location: State College, Pennsylvania, United States
+          - size: full
+            widgets:
+              - type: hacker-news
