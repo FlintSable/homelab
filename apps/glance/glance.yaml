@@ -15,9 +15,9 @@ data:
                 title: NETWORK
                 sites:
                   - title: UniFi
-                    url: https://192.168.1.1
+                    url: http://192.168.1.1
                     icon: si:ubiquiti
-                    allow-insecure: true
+
                   
                   - title: Xfinity Router
                     url: http://10.0.0.1
@@ -35,7 +35,7 @@ data:
                     icon: si:truenas
                   
                   - title: K8s Control Plane
-                    url: https://192.168.1.110:6443
+                    url: https://192.168.1.110:6443/livez
                     icon: si:kubernetes
                   
                   - title: K8s Worker Node
