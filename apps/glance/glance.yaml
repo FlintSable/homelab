@@ -17,6 +17,7 @@ data:
                   - title: UniFi
                     url: https://192.168.1.1
                     icon: si:ubiquiti
+                    allow-insecure: true
                   
                   - title: Xfinity Router
                     url: http://10.0.0.1
