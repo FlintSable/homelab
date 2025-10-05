@@ -14,14 +14,14 @@ data:
                 cache: 1m
                 title: NETWORK
                 sites:
-                - title: UniFi
-                  url: https://192.168.1.1
-                  check-url: https://192.168.1.1
-                  icon: si:ubiquiti
-                  allow-insecure: true
-                  alt-status-codes:
-                    - 401
-                    - 403
+                  - title: UniFi
+                    url: https://192.168.1.1
+                    check-url: https://192.168.1.1
+                    icon: si:ubiquiti
+                    allow-insecure: true
+                    alt-status-codes:
+                      - 401
+                      - 403
 
                   - title: Xfinity Router
                     url: http://10.0.0.1
