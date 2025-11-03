@@ -60,16 +60,6 @@ data:
             ping: 192.168.1.182
 
     - Services:
-        # Services will be added here as you deploy them
-        # - Plex:
-        #     href: http://192.168.1.202
-        #     icon: plex
-        #     description: Media Server
-        #
-        # - Grafana:
-        #     href: http://192.168.1.203
-        #     icon: grafana
-        #     description: Metrics Dashboard
 
   widgets.yaml: |
     - kubernetes:
