@@ -190,6 +190,20 @@ spec:
         app: homepage
     spec:
       serviceAccountName: homepage
+      initContainers:
+      - name: config-setup
+        image: busybox:latest
+        command:
+        - sh
+        - -c
+        - |
+          cp -r /tmp/config/* /app/config/ || true
+          chmod -R 755 /app/config
+        volumeMounts:
+        - name: config-source
+          mountPath: /tmp/config
+        - name: config
+          mountPath: /app/config
       containers:
       - name: homepage
         image: ghcr.io/gethomepage/homepage:latest
@@ -199,12 +213,10 @@ spec:
           protocol: TCP
         env:
         - name: HOMEPAGE_ALLOWED_HOSTS
-          value: "192.168.1.0/24"
+          value: "*"
         volumeMounts:
         - name: config
           mountPath: /app/config
-        - name: logs
-          mountPath: /app/config/logs
         resources:
           requests:
             memory: "256Mi"
@@ -213,10 +225,10 @@ spec:
             memory: "512Mi"
             cpu: "500m"
       volumes:
-      - name: config
+      - name: config-source
         configMap:
           name: homepage-config
-      - name: logs
+      - name: config
         emptyDir: {}
 
 ---
