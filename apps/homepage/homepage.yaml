@@ -59,8 +59,6 @@ data:
             description: K8s Worker (GPU)
             ping: 192.168.1.182
 
-    - Services:
-
   widgets.yaml: |
     - kubernetes:
         cluster:
