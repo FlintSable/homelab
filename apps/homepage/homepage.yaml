@@ -197,7 +197,12 @@ spec:
         - sh
         - -c
         - |
-          cp -r /tmp/config/* /app/config/ || true
+          cp /tmp/config/settings.yaml /app/config/settings.yaml
+          cp /tmp/config/services.yaml /app/config/services.yaml
+          cp /tmp/config/widgets.yaml /app/config/widgets.yaml
+          cp /tmp/config/bookmarks.yaml /app/config/bookmarks.yaml
+          cp /tmp/config/kubernetes.yaml /app/config/kubernetes.yaml
+          touch /app/config/docker.yaml
           chmod -R 755 /app/config
         volumeMounts:
         - name: config-source
