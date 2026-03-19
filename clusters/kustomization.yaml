@@ -1,2 +1,3 @@
-# Put cluster-wide components here later (ingress, metallb, gpu, flux, etc.)
-resources: []
+# Cluster-wide infrastructure components
+resources:
+  - ../infra/nvidia-device-plugin
