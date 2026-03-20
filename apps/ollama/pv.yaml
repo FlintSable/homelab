@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ollama-models-pv
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-ollama
+  nfs:
+    server: 192.0.2.10  # NFS server (Proxmox host)
+    path: /zfs-nvme-data/k8s-storage/ollama
