@@ -33,11 +33,29 @@ spec:
               cpu: "50m"
               memory: "128Mi"
             limits:
-              memory: "256Mi"
+              memory: "512Mi"
           volumeMounts:
+            # Mount each managed file via subPath so /app/config itself stays writable.
+            # Homepage v1.5+ copies skeleton defaults (e.g. proxmox.yaml) into /app/config
+            # on startup; a whole-dir read-only ConfigMap mount makes that fail with EROFS.
             - name: config
-              mountPath: /app/config
-            # Homepage writes logs here; keep it writable over the read-only config mount.
+              mountPath: /app/config/settings.yaml
+              subPath: settings.yaml
+            - name: config
+              mountPath: /app/config/services.yaml
+              subPath: services.yaml
+            - name: config
+              mountPath: /app/config/bookmarks.yaml
+              subPath: bookmarks.yaml
+            - name: config
+              mountPath: /app/config/widgets.yaml
+              subPath: widgets.yaml
+            - name: config
+              mountPath: /app/config/docker.yaml
+              subPath: docker.yaml
+            - name: config
+              mountPath: /app/config/kubernetes.yaml
+              subPath: kubernetes.yaml
             - name: logs
               mountPath: /app/config/logs
       volumes:
