@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage
+  namespace: homepage
+spec:
+  type: LoadBalancer
+  # No loadBalancerIP set: MetalLB auto-assigns from its pool for a clean first deploy.
+  # Optional open item: pin a stable IP + DNS name (see spec).
+  selector:
+    app: homepage
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
