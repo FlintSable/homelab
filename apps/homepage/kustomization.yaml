@@ -6,3 +6,11 @@ resources:
   - configmap.yaml
   - deployment.yaml
   - service.yaml
+
+# Match the labels/selector the live deployment was created with (selectors are
+# immutable), mirroring the pattern used by apps/glance.
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/name: homepage
+      app.kubernetes.io/managed-by: gitops
