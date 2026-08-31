@@ -23,12 +23,17 @@ data:
       Cluster Nodes:
         style: row
         columns: 4
+      Clients:
+        style: row
+        columns: 4
       Network:
         style: row
         columns: 2
       Apps:
         style: row
         columns: 3
+      Weather:
+        style: row
 
   services.yaml: |
     - Infrastructure:
@@ -73,6 +78,17 @@ data:
             ping: 192.168.1.186
             description: 192.168.1.186 · worker
 
+    - Clients:
+        # Placeholder — replace with your real machines, e.g.:
+        #   - Studio Desktop:
+        #       icon: mdi-desktop-tower-monitor
+        #       ping: 192.168.1.50
+        #       description: 192.168.1.50 · main desktop
+        # Laptops that sleep will read "down" when off — that is expected with ping.
+        - Add devices:
+            icon: mdi-devices
+            description: list desktops/laptops here (name · IP), monitored by ping
+
     - Network:
         - UniFi Gateway:
             id: unifi
@@ -100,16 +116,32 @@ data:
         - Repo:
             - abbr: GH
               href: https://github.com/FlintSable/homelab
+    - Weather:
+        - NWS State College:
+            - abbr: NWS
+              icon: mdi-weather-lightning-rainy
+              href: https://forecast.weather.gov/MapClick.php?lat=40.7934&lon=-77.86
+        - Windy Radar:
+            - abbr: WY
+              icon: mdi-radar
+              href: https://www.windy.com/40.793/-77.860?radar,40.793,-77.860,8
 
   widgets.yaml: |
     - greeting:
         text_size: xl
         text: homelab
+    - openmeteo:
+        label: State College
+        latitude: 40.7934
+        longitude: -77.8600
+        units: imperial
+        cache: 5
     - datetime:
         text_size: xl
         format:
-          timeStyle: short
-          hourCycle: h23
+          hour: numeric
+          minute: numeric
+          hour12: true
 
   # "Statusline" theme — amber-phosphor accent on cool slate, monospace data voice.
   # Best-effort selectors layered on Homepage's supported dark theme; the settings
