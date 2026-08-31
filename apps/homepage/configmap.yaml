@@ -47,13 +47,15 @@ data:
             id: proxmox
             icon: proxmox.png
             href: "https://{{HOMEPAGE_VAR_PROXMOX_IP}}:8006"
-            siteMonitor: "https://{{HOMEPAGE_VAR_PROXMOX_IP}}:8006"
+            # Self-signed HTTPS: monitor host reachability via ping (avoids disabling
+            # TLS verification); the tile still links to the :8006 web UI.
+            ping: "{{HOMEPAGE_VAR_PROXMOX_IP}}"
             description: "{{HOMEPAGE_VAR_PROXMOX_IP}} · Hypervisor (prox-nix)"
         - Kubernetes API:
             id: k8s-api
             icon: kubernetes.png
             href: https://192.168.1.110:6443/livez
-            siteMonitor: https://192.168.1.110:6443/livez
+            ping: 192.168.1.110
             description: 192.168.1.110:6443 · Control plane API
 
     - Cluster Nodes:
