@@ -16,6 +16,10 @@ spec:
       containers:
         - name: homepage
           image: ghcr.io/gethomepage/homepage:v1.5.0
+          # ICMP ping (for the bare Cluster Nodes tiles) needs raw sockets.
+          securityContext:
+            capabilities:
+              add: ["NET_RAW"]
           ports:
             - containerPort: 3000
           env:
@@ -56,6 +60,12 @@ spec:
             - name: config
               mountPath: /app/config/kubernetes.yaml
               subPath: kubernetes.yaml
+            - name: config
+              mountPath: /app/config/custom.css
+              subPath: custom.css
+            - name: config
+              mountPath: /app/config/custom.js
+              subPath: custom.js
             - name: logs
               mountPath: /app/config/logs
       volumes:

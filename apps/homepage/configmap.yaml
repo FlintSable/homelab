@@ -7,9 +7,20 @@ data:
   settings.yaml: |
     title: Homelab
     theme: dark
-    headerStyle: boxed
+    color: slate
+    headerStyle: boxedWidgets
+    statusStyle: "dot"
+    hideVersion: true
+    # Type anywhere to open a centered search overlay (the "search in the middle").
+    quicklaunch:
+      searchDescriptions: true
+      showSearchSuggestions: true
+      provider: duckduckgo
     layout:
       Infrastructure:
+        style: row
+        columns: 3
+      Cluster Nodes:
         style: row
         columns: 4
       Network:
@@ -22,44 +33,67 @@ data:
   services.yaml: |
     - Infrastructure:
         - TrueNAS:
+            id: truenas
             icon: truenas.png
             href: http://192.168.1.86
             siteMonitor: http://192.168.1.86
-            description: NAS / bulk storage
-        - K8s Control Plane:
+            description: 192.168.1.86 · NAS / bulk storage
+        - Proxmox:
+            id: proxmox
+            icon: proxmox.png
+            href: "https://{{HOMEPAGE_VAR_PROXMOX_IP}}:8006"
+            siteMonitor: "https://{{HOMEPAGE_VAR_PROXMOX_IP}}:8006"
+            description: "{{HOMEPAGE_VAR_PROXMOX_IP}} · Hypervisor (prox-nix)"
+        - Kubernetes API:
+            id: k8s-api
             icon: kubernetes.png
             href: https://192.168.1.110:6443/livez
             siteMonitor: https://192.168.1.110:6443/livez
-            description: kube-apiserver
-        - Proxmox (prox-nix):
-            icon: proxmox.png
-            href: https://{{HOMEPAGE_VAR_PROXMOX_IP}}:8006
-            siteMonitor: https://{{HOMEPAGE_VAR_PROXMOX_IP}}:8006
-            description: Hypervisor host
-        - K8s Worker:
-            icon: kubernetes.png
-            href: http://192.168.1.182
-            siteMonitor: http://192.168.1.182
-            description: Worker node
+            description: 192.168.1.110:6443 · Control plane API
+
+    - Cluster Nodes:
+        - x270-ctrl:
+            id: node-ctrl
+            icon: mdi-server-network
+            ping: 192.168.1.110
+            description: 192.168.1.110 · control-plane
+        - k8s-gpu-01:
+            id: node-gpu
+            icon: mdi-expansion-card
+            ping: 192.168.1.184
+            description: 192.168.1.184 · RTX 3090
+        - k8s-worker-01:
+            id: node-w1
+            icon: mdi-server
+            ping: 192.168.1.185
+            description: 192.168.1.185 · worker
+        - k8s-worker-02:
+            id: node-w2
+            icon: mdi-server
+            ping: 192.168.1.186
+            description: 192.168.1.186 · worker
 
     - Network:
         - UniFi Gateway:
-            icon: ubiquiti.png
+            id: unifi
+            icon: unifi.png
             href: http://192.168.1.1
             siteMonitor: http://192.168.1.1
-            description: LAN gateway
+            description: 192.168.1.1 · LAN gateway
         - Xfinity Router:
-            icon: xfinity.png
+            id: xfinity
+            icon: mdi-router-wireless
             href: http://10.0.0.1
             siteMonitor: http://10.0.0.1
-            description: WAN / ISP router
+            description: 10.0.0.1 · WAN / ISP router
 
     - Apps:
         - Ollama:
+            id: ollama
             icon: ollama.png
-            href: http://{{HOMEPAGE_VAR_OLLAMA_IP}}:11434
-            siteMonitor: http://{{HOMEPAGE_VAR_OLLAMA_IP}}:11434
-            description: LLM inference (RTX 3090)
+            href: "http://{{HOMEPAGE_VAR_OLLAMA_IP}}:11434"
+            siteMonitor: "http://{{HOMEPAGE_VAR_OLLAMA_IP}}:11434"
+            description: "{{HOMEPAGE_VAR_OLLAMA_IP}}:11434 · LLM inference (RTX 3090)"
 
   bookmarks.yaml: |
     - Homelab:
@@ -68,18 +102,60 @@ data:
               href: https://github.com/FlintSable/homelab
 
   widgets.yaml: |
+    - greeting:
+        text_size: xl
+        text: homelab
     - datetime:
         text_size: xl
         format:
-          dateStyle: full
           timeStyle: short
-    - resources:
-        cpu: true
-        memory: true
-    - search:
-        provider: duckduckgo
-        target: _blank
+          hourCycle: h23
 
-  # Empty files so Homepage does not attempt to create them on the read-only mount.
+  # "Statusline" theme — amber-phosphor accent on cool slate, monospace data voice.
+  # Best-effort selectors layered on Homepage's supported dark theme; the settings
+  # above already give a solid look if any rule here does not attach.
+  custom.css: |
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+    :root {
+      --hl-accent: #ffb454;            /* amber phosphor — the single accent */
+      --hl-bg: #0e1116;
+      --hl-grid: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Cool-slate base with a faint blueprint grid */
+    body {
+      background-color: var(--hl-bg) !important;
+      background-image:
+        linear-gradient(var(--hl-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--hl-grid) 1px, transparent 1px) !important;
+      background-size: 34px 34px !important;
+      background-attachment: fixed !important;
+    }
+
+    /* Monospace "data voice": clock, greeting, and the IP line on every tile */
+    #information-widgets,
+    .service-description,
+    [class*="description"] {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace !important;
+      letter-spacing: -0.01em;
+    }
+
+    /* Amber group headers, uppercased and spaced like section labels */
+    h2 {
+      color: var(--hl-accent) !important;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+
+    /* Greeting reads as the statusline hostname */
+    #information-widgets .greeting,
+    [class*="greeting"] {
+      color: var(--hl-accent) !important;
+      font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+    }
+
+  custom.js: ""
   docker.yaml: ""
   kubernetes.yaml: ""
