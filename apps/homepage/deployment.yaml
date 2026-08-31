@@ -13,6 +13,13 @@ spec:
       labels:
         app: homepage
     spec:
+      # The Calico pod network (192.168.0.0/16) overlaps the physical LAN
+      # (192.168.1.0/24), so Calico does not SNAT pod->LAN traffic and non-node
+      # LAN hosts have no return route to pod IPs. Running on the node's network
+      # makes monitoring checks originate from the node's real LAN IP so every
+      # main-LAN target (TrueNAS, UniFi, Proxmox, routers) is reachable.
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: homepage
           image: ghcr.io/gethomepage/homepage:v1.5.0
@@ -27,6 +34,9 @@ spec:
             # "*" disables the check — acceptable for a private LAN dashboard.
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: "*"
+            # Accept the self-signed certs on Proxmox (:8006) and UniFi for siteMonitor.
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
             # Templated unknowns — swap REPLACE_ME once collected (see spec Open Items).
             - name: HOMEPAGE_VAR_PROXMOX_IP
               value: "192.168.1.183"
