@@ -79,15 +79,17 @@ data:
             description: 192.168.1.186 · worker
 
     - Clients:
-        # Placeholder — replace with your real machines, e.g.:
-        #   - Studio Desktop:
-        #       icon: mdi-desktop-tower-monitor
-        #       ping: 192.168.1.50
-        #       description: 192.168.1.50 · main desktop
-        # Laptops that sleep will read "down" when off — that is expected with ping.
-        - Add devices:
-            icon: mdi-devices
-            description: list desktops/laptops here (name · IP), monitored by ping
+        # Devices on the GL-AXT1800's 192.168.8.0/24 subnet are behind its NAT and
+        # not reachable from the main LAN, so these are inventory tiles (no status).
+        # Machines on the main 192.168.1.x LAN can add `ping: <ip>` for live status.
+        - iArch:
+            id: client-iarch
+            icon: mdi-desktop-tower
+            description: 192.168.8.142 · upstairs desktop · via GL-AXT1800
+        - x1-arch:
+            id: client-x1
+            icon: mdi-laptop
+            description: 192.168.8.179 · laptop (normally on) · via GL-AXT1800
 
     - Network:
         - UniFi Gateway:
@@ -102,6 +104,11 @@ data:
             href: http://10.0.0.1
             siteMonitor: http://10.0.0.1
             description: 10.0.0.1 · WAN / ISP router
+        - GL-AXT1800:
+            id: gl-axt1800
+            icon: mdi-router-wireless
+            href: http://192.168.8.1
+            description: 192.168.1.126 → 192.168.8.1 · travel router (NAT)
 
     - Apps:
         - Ollama:
