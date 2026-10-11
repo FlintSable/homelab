@@ -75,9 +75,14 @@ the env values need swapping later. See **Open Items** below.
 ## Open Items (info to collect)
 
 - [x] **`prox-nix` (Proxmox host) IP** → `192.168.1.183` (set in deployment.yaml)
-- [ ] **Ollama LoadBalancer IP** → set `HOMEPAGE_VAR_OLLAMA_IP` (currently `REPLACE_ME`;
-      note `apps/ollama/service.yaml` uses the sanitized doc-range `192.0.2.201`)
-- [ ] Confirm K8s worker `192.168.1.182` is the intended node to monitor
+- [ ] **Ollama LoadBalancer IP** — the repo intentionally keeps the placeholder; the real IP
+      is applied to the cluster only, via
+      `kubectl set env deployment/homepage HOMEPAGE_VAR_OLLAMA_IP=...`. It must be re-applied
+      after every `kubectl apply -k`, so it silently regresses. A durable mechanism is still
+      needed.
+- [x] ~~Confirm K8s worker `192.168.1.182`~~ — that address belongs to no node. Replaced with
+      the real nodes (`k8s-gpu-01` .184, `k8s-worker-01` .185, `k8s-worker-02` .186, plus
+      `x270-ctrl` .110), monitored by ICMP ping.
 - [ ] (Optional) Pin a stable MetalLB IP for the dashboard + add a DNS name
 - [ ] (Optional) Tighten `HOMEPAGE_ALLOWED_HOSTS` from `*` to the specific host
 
