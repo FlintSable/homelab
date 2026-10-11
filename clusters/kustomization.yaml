@@ -1,3 +1,4 @@
 # Cluster-wide infrastructure components
 resources:
   - ../infra/nvidia-device-plugin
+  - ../apps/homepage

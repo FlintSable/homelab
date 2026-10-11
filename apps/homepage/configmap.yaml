@@ -1,0 +1,202 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-config
+  namespace: homepage
+data:
+  settings.yaml: |
+    title: Homelab
+    theme: dark
+    color: slate
+    headerStyle: boxedWidgets
+    statusStyle: "dot"
+    hideVersion: true
+    # Type anywhere to open a centered search overlay (the "search in the middle").
+    quicklaunch:
+      searchDescriptions: true
+      showSearchSuggestions: true
+      provider: duckduckgo
+    layout:
+      Infrastructure:
+        style: row
+        columns: 3
+      Cluster Nodes:
+        style: row
+        columns: 4
+      Clients:
+        style: row
+        columns: 4
+      Network:
+        style: row
+        columns: 2
+      Apps:
+        style: row
+        columns: 3
+      Weather:
+        style: row
+
+  services.yaml: |
+    - Infrastructure:
+        - TrueNAS:
+            id: truenas
+            icon: truenas.png
+            href: http://192.168.1.86
+            siteMonitor: http://192.168.1.86
+            description: 192.168.1.86 · NAS / bulk storage
+        - Proxmox:
+            id: proxmox
+            icon: proxmox.png
+            href: "https://{{HOMEPAGE_VAR_PROXMOX_IP}}:8006"
+            # Self-signed HTTPS: monitor host reachability via ping (avoids disabling
+            # TLS verification); the tile still links to the :8006 web UI.
+            ping: "{{HOMEPAGE_VAR_PROXMOX_IP}}"
+            description: "{{HOMEPAGE_VAR_PROXMOX_IP}} · Hypervisor (prox-nix)"
+        - Kubernetes API:
+            id: k8s-api
+            icon: kubernetes.png
+            href: https://192.168.1.110:6443/livez
+            ping: 192.168.1.110
+            description: 192.168.1.110:6443 · Control plane API
+
+    - Cluster Nodes:
+        - x270-ctrl:
+            id: node-ctrl
+            icon: mdi-server-network
+            ping: 192.168.1.110
+            description: 192.168.1.110 · control-plane
+        - k8s-gpu-01:
+            id: node-gpu
+            icon: mdi-expansion-card
+            ping: 192.168.1.184
+            description: 192.168.1.184 · RTX 3090
+        - k8s-worker-01:
+            id: node-w1
+            icon: mdi-server
+            ping: 192.168.1.185
+            description: 192.168.1.185 · worker
+        - k8s-worker-02:
+            id: node-w2
+            icon: mdi-server
+            ping: 192.168.1.186
+            description: 192.168.1.186 · worker
+
+    - Clients:
+        # Devices on the GL-AXT1800's 192.168.8.0/24 subnet are behind its NAT and
+        # not reachable from the main LAN, so these are inventory tiles (no status).
+        # Machines on the main 192.168.1.x LAN can add `ping: <ip>` for live status.
+        - iArch:
+            id: client-iarch
+            icon: mdi-desktop-tower
+            description: 192.168.8.142 · upstairs desktop · via GL-AXT1800
+        - x1-arch:
+            id: client-x1
+            icon: mdi-laptop
+            description: 192.168.8.179 · laptop (normally on) · via GL-AXT1800
+
+    - Network:
+        - UniFi Gateway:
+            id: unifi
+            icon: unifi.png
+            href: http://192.168.1.1
+            siteMonitor: http://192.168.1.1
+            description: 192.168.1.1 · LAN gateway
+        - Xfinity Router:
+            id: xfinity
+            icon: mdi-router-wireless
+            href: http://10.0.0.1
+            siteMonitor: http://10.0.0.1
+            description: 10.0.0.1 · WAN / ISP router
+        - GL-AXT1800:
+            id: gl-axt1800
+            icon: mdi-router-wireless
+            href: http://192.168.8.1
+            description: 192.168.1.126 → 192.168.8.1 · travel router (NAT)
+
+    - Apps:
+        - Ollama:
+            id: ollama
+            icon: ollama.png
+            href: "http://{{HOMEPAGE_VAR_OLLAMA_IP}}:11434"
+            siteMonitor: "http://{{HOMEPAGE_VAR_OLLAMA_IP}}:11434"
+            description: "{{HOMEPAGE_VAR_OLLAMA_IP}}:11434 · LLM inference (RTX 3090)"
+
+  bookmarks.yaml: |
+    - Homelab:
+        - Repo:
+            - abbr: GH
+              href: https://github.com/FlintSable/homelab
+    - Weather:
+        - NWS State College:
+            - abbr: NWS
+              icon: mdi-weather-lightning-rainy
+              href: https://forecast.weather.gov/MapClick.php?lat=40.7934&lon=-77.86
+        - Windy Radar:
+            - abbr: WY
+              icon: mdi-radar
+              href: https://www.windy.com/40.793/-77.860?radar,40.793,-77.860,8
+
+  widgets.yaml: |
+    - greeting:
+        text_size: xl
+        text: homelab
+    - openmeteo:
+        label: State College
+        latitude: 40.7934
+        longitude: -77.8600
+        units: imperial
+        cache: 5
+    - datetime:
+        text_size: xl
+        format:
+          hour: numeric
+          minute: numeric
+          hour12: true
+
+  # "Statusline" theme — amber-phosphor accent on cool slate, monospace data voice.
+  # Best-effort selectors layered on Homepage's supported dark theme; the settings
+  # above already give a solid look if any rule here does not attach.
+  custom.css: |
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+    :root {
+      --hl-accent: #ffb454;            /* amber phosphor — the single accent */
+      --hl-bg: #0e1116;
+      --hl-grid: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Cool-slate base with a faint blueprint grid */
+    body {
+      background-color: var(--hl-bg) !important;
+      background-image:
+        linear-gradient(var(--hl-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--hl-grid) 1px, transparent 1px) !important;
+      background-size: 34px 34px !important;
+      background-attachment: fixed !important;
+    }
+
+    /* Monospace "data voice": clock, greeting, and the IP line on every tile */
+    #information-widgets,
+    .service-description,
+    [class*="description"] {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace !important;
+      letter-spacing: -0.01em;
+    }
+
+    /* Amber group headers, uppercased and spaced like section labels */
+    h2 {
+      color: var(--hl-accent) !important;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+
+    /* Greeting reads as the statusline hostname */
+    #information-widgets .greeting,
+    [class*="greeting"] {
+      color: var(--hl-accent) !important;
+      font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+    }
+
+  custom.js: ""
+  docker.yaml: ""
+  kubernetes.yaml: ""

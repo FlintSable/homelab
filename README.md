@@ -53,7 +53,8 @@ A hybrid Kubernetes cluster combining a physical control plane with Proxmox-virt
 
 ```
 ├── apps/                      # Application workloads
-│   ├── glance/                # Dashboard
+│   ├── glance/                # Legacy dashboard config (unused, superseded by homepage)
+│   ├── homepage/              # Dashboard (service + device status)
 │   └── ollama/                # LLM inference (GPU)
 ├── clusters/                  # Cluster-wide kustomization
 └── infra/                     # Infrastructure components
@@ -82,6 +83,18 @@ zfs-nvme-data/k8s-storage/
 
 ### Ollama (LLM Inference)
 Local large language model inference running on the RTX 3090 (24GB VRAM). Deployed as a Kubernetes workload with GPU scheduling via `nvidia.com/gpu` resource requests. Models are stored on NFS-backed ZFS storage. Accessible across the LAN via MetalLB LoadBalancer on port `11434`.
+
+### Homepage (Dashboard)
+Single pane of glass for the homelab: live up/down status for services and hosts alongside launcher links. Served across the LAN via MetalLB LoadBalancer on port `3000`.
+
+Status checks are deliberately mixed:
+
+- **HTTP** (`siteMonitor`) for anything serving a web UI — TrueNAS, Ollama, routers.
+- **ICMP** (`ping`) for bare hosts, and for self-signed HTTPS endpoints such as Proxmox `:8006` and kube-apiserver `:6443`. Using ping there keeps TLS verification enabled everywhere.
+
+The pod runs with `hostNetwork: true`. The Calico pod CIDR (`192.168.0.0/16`) overlaps the physical LAN (`192.168.1.0/24`), so Calico does not SNAT pod-to-LAN traffic and LAN devices have no return route to pod IPs — every check against physical hardware timed out. Running on the node's network stack makes checks originate from a real LAN address. Re-addressing the pod CIDR off `192.168.0.0/16` is the proper long-term fix.
+
+Hosts behind the GL-AXT1800 travel router (its own NATed `192.168.8.0/24`) are unreachable from the main LAN by design, so they appear as inventory tiles without a status indicator.
 
 ## Planned Services
 
